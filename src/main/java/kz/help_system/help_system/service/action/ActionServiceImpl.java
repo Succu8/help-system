@@ -1,4 +1,23 @@
 package kz.help_system.help_system.service.action;
 
-public class ActionServiceImpl implements ActionService{
+import kz.help_system.help_system.model.ActionInfo;
+import kz.help_system.help_system.repository.ActionRepository;
+import kz.help_system.help_system.util.Mapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class ActionServiceImpl implements ActionService {
+
+  private final ActionRepository actionRepository;
+
+  @Override
+  public ActionInfo getActionById(Long id) {
+    return actionRepository.findById(id)
+                           .map(Mapper::toActionInfo)
+                           .orElseThrow(() -> new RuntimeException(
+                             "TUzqy5yRD:: not found action by id=" + id));
+  }
+
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CategoryInfo {
 
-  public Integer id;
-  public String  name;
+  public Long   id;
+  public String name;
 
 }

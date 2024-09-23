@@ -18,8 +18,7 @@ public class ClientEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(updatable = false, nullable = false)
-  public Integer id;
+  public Long id;
 
   @Column(updatable = false, nullable = false, unique = true)
   public String iin;

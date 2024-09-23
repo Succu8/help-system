@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ProductInfo {
 
-  public Integer id;
-  public Integer categoryId;
-  public String  name;
-  public Integer price;
-  public String  description;
+  public Long         id;
+  public CategoryInfo category;
+  public String       name;
+  public Double       price;
+  public String       description;
 
 }

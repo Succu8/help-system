@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ClientInfo {
 
-  public Integer id;
-  public String  iin;
-  public String  name;
-  public String  surname;
-  public Date    birthday;
+  public Long   id;
+  public String iin;
+  public String name;
+  public String surname;
+  public Date   birthday;
 
 }
