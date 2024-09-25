@@ -1,10 +1,18 @@
 package kz.help_system.help_system.service.product;
 
-import java.time.LocalDate;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import kz.help_system.help_system.dto.ProductFilter;
+import kz.help_system.help_system.entity.CategoryEntity;
 import kz.help_system.help_system.entity.ProductEntity;
+import kz.help_system.help_system.exception.DataNotFound;
+import kz.help_system.help_system.model.CategoryInfo;
 import kz.help_system.help_system.model.ProductInfo;
 import kz.help_system.help_system.repository.ProductRepository;
 import kz.help_system.help_system.util.Mapper;
@@ -22,41 +30,63 @@ public class ProductServiceImpl implements ProductService {
   public ProductInfo getProductById(Long id) {
     return productRepository.findById(id)
                             .map(Mapper::toProductInfo)
-                            .orElseThrow(() -> new RuntimeException(
-                              "9l0k0A5kww:: not found product by id=" + id));
+                            .orElseThrow(() -> new DataNotFound("0b1OH3nQ", "product", id));
   }
 
   @Override
-  public List<ProductInfo> getProductsByActionPeriod(LocalDate beginDate, LocalDate endDate) {
-    return null;
+  public List<ProductInfo> getProductsByActionPeriod(Date beginDate, Date endDate) {
+    return productRepository.findProductsByActionDateRange(beginDate, endDate).stream()
+                            .map((ProductEntity res) -> ProductInfo.builder()
+                                                                   .id(res.id)
+                                                                   .category(CategoryInfo.builder()
+                                                                                         .id(res.category.id)
+                                                                                         .name(res.category.name)
+                                                                                         .build())
+                                                                   .name(res.name)
+                                                                   .price(res.price)
+                                                                   .description(res.description)
+                                                                   .build())
+                            .toList();
   }
 
   @Override
   public ProductInfo getProductByDescription(String description) {
     return productRepository.findByDescription(description).stream().findFirst()
                             .map(Mapper::toProductInfo)
-                            .orElseThrow(() -> new RuntimeException(
-                              "xNDRfgh84K:: not found product by description=" + description));
+                            .orElseThrow(() -> new DataNotFound("qJroMra5WK", "product", description));
   }
 
   @Override
   public ProductInfo getProductByFilter(ProductFilter filter) {
-    Specification<ProductEntity> spec = Specification.where(
-                                                       filter.categoryId == null ? null
-                                                         : (Specification<ProductEntity>) (root, query, criteriaBuilder) ->
-                                                         criteriaBuilder.equal(root.get("categoryId"), filter.categoryId))
-                                                     .and(filter.price == null ? null
-                                                            : (Specification<ProductEntity>) (root, query, criteriaBuilder) ->
-                                                       criteriaBuilder.equal(root.get("price"), filter.price))
-                                                     .and(filter.description == null ? null
-                                                            : (Specification<ProductEntity>) (root, query, criteriaBuilder) ->
-                                                       criteriaBuilder.like(root.get("description"),
-                                                                            "%" + filter.description + "%"));
+    Specification<ProductEntity> spec = (root, query, criteriaBuilder) -> {
+      List<Predicate> predicates = new ArrayList<>();
+
+      if (filter != null) {
+        if (filter.categoryId != null) {
+          Subquery<CategoryEntity> subquery           = Objects.requireNonNull(query).subquery(CategoryEntity.class);
+          Root<CategoryEntity>     categoryEntityRoot = subquery.from(CategoryEntity.class);
+
+          subquery.select(categoryEntityRoot)
+                  .where(criteriaBuilder.equal(categoryEntityRoot.get("id"), filter.categoryId));
+
+          predicates.add(criteriaBuilder.in(root.get("category")).value(subquery));
+        }
+
+        if (filter.price != null) {
+          predicates.add(criteriaBuilder.equal(root.get("price"), filter.price));
+        }
+
+        if (filter.description != null) {
+          predicates.add(criteriaBuilder.equal(root.get("description"), filter.description));
+        }
+      }
+
+      return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    };
 
     return Optional.ofNullable(productRepository.findAll(spec).getFirst())
                    .map(Mapper::toProductInfo)
-                   .orElseThrow(() -> new RuntimeException(
-                     "GWG2tjFhV:: not found product by specification=" + spec));
+                   .orElseThrow(() -> new DataNotFound("TbRHbCus7", "product", filter.toString()));
   }
 
 }

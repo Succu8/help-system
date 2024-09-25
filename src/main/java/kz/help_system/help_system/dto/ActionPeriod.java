@@ -1,6 +1,6 @@
 package kz.help_system.help_system.dto;
 
-import java.time.LocalDate;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ActionPeriod {
 
-  public LocalDate beginDate;
-  public LocalDate endDate;
+  public Date beginDate;
+  public Date endDate;
 
 }

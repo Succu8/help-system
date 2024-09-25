@@ -7,8 +7,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductFilter {
 
-  public String categoryId;
+  public Long categoryId;
   public Double price;
   public String description;
 
+  @Override
+  public String toString() {
+    return "ProductFilter{" +
+      "categoryId=" + categoryId +
+      ", price=" + price +
+      ", description='" + description + '\'' +
+      '}';
+  }
 }

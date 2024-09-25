@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProductDescription {
 
-  public String __;
+  public String description;
 
 }

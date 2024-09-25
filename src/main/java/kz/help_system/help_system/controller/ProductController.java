@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,17 +28,17 @@ public class ProductController {
     return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
   }
 
-  @GetMapping("/by-action-period")
+  @PostMapping("/by-action-period")
   public ResponseEntity<List<ProductInfo>> getProductsByActionPeriod(@RequestBody ActionPeriod period) {
     return ResponseEntity.ok(productService.getProductsByActionPeriod(period.beginDate, period.endDate));
   }
 
-  @GetMapping("/by-description")
+  @PostMapping("/by-description")
   public ResponseEntity<ProductInfo> getProductByDescription(@RequestBody ProductDescription description) {
-    return ResponseEntity.ok(productService.getProductByDescription(description.__));
+    return ResponseEntity.ok(productService.getProductByDescription(description.description));
   }
 
-  @GetMapping("/filter")
+  @PostMapping("/filter")
   public ResponseEntity<ProductInfo> getProductByFilter(@RequestBody ProductFilter filter) {
     return ResponseEntity.ok(productService.getProductByFilter(filter));
   }
